@@ -25,6 +25,7 @@ func main() {
 }
 
 func task() {
+
 	for {
 
 		mnemonic, _ := hdwallet.NewMnemonic(12, "")
@@ -48,15 +49,25 @@ func task() {
 		ethAddr, _ := wallet.GetAddress()
 		ethPriv := wallet.GetKey().PrivateHex()
 
-		btcCheck := strings.HasSuffix(btcAddr, "MyCoin") || strings.HasSuffix(btcAddr, "MyLove") || strings.HasSuffix(btcAddr, "MyDream") ||
-			strings.HasSuffix(btcAddr, "MYBTC") || strings.HasSuffix(btcAddr, "China") || strings.HasSuffix(btcAddr, "Bitcoin") ||
-			strings.HasSuffix(btcAddr, "LiuCan") || strings.HasSuffix(btcAddr, "MyBTC") || strings.HasSuffix(btcAddr, "XXXXX") ||
-			strings.HasSuffix(btcAddr, "5201314") || strings.HasSuffix(btcAddr, "Lucky") || strings.HasSuffix(btcAddr, "5201314")
+		btcKeys := []string{"MyCoin", "MyLove", "MyDream", "MyBTC", "China", "Bitcoin", "LiuCan", "Lucky"}
 
+		btcCheck := false
+		for _, value := range btcKeys {
+			btcCheck = strings.HasSuffix(btcAddr, value)
+			if btcCheck {
+				break
+			}
+		}
+
+		ethKeys := []string{"00000000", "00000001", "00000003", "00000006", "00000007", "00000008", "00000009", "00001314", "00002020"}
 		ethAddrCut := ethAddr[2:6] + ethAddr[38:]
-		ethCheck := strings.HasSuffix(ethAddrCut, "00000000") || strings.HasSuffix(ethAddrCut, "00000001") || strings.HasSuffix(ethAddrCut, "00000003") ||
-			strings.HasSuffix(ethAddrCut, "00000006") || strings.HasSuffix(ethAddrCut, "00000007") || strings.HasSuffix(ethAddrCut, "00000008") ||
-			strings.HasSuffix(ethAddrCut, "00000009") || strings.HasSuffix(ethAddrCut, "00001314") || strings.HasSuffix(ethAddrCut, "00002020")
+		ethCheck := false
+		for _, value := range ethKeys {
+			ethCheck = strings.HasSuffix(ethAddrCut, value)
+			if ethCheck {
+				break
+			}
+		}
 
 		if btcCheck || ethCheck {
 
