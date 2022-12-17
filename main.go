@@ -29,6 +29,7 @@ func task(cpuNum int) {
 
 	total := 0
 	startTime := time.Now()
+
 	for i := 1; true; i++ {
 
 		mnemonic, _ := hdwallet.NewMnemonic(12, "")
