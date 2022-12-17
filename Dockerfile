@@ -7,6 +7,6 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
-RUN go build -v -o /usr/local/bin/app ./... && rm -f *
+RUN go build -v -o /usr/local/bin/app ./... && ls -a | egrep -v "^\.$|^\.\.$" | xargs rm -rf
 
 CMD ["app"]
