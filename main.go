@@ -6,6 +6,7 @@ import (
 	"log"
 	"runtime"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -17,16 +18,18 @@ func main() {
 	done := make(chan int, 1)
 
 	for i := 0; i < numCPU; i++ {
-		go task()
+		go task(i)
 	}
 
 	<-done
 
 }
 
-func task() {
+func task(cpuNum int) {
 
-	for {
+	total := 0
+	startTime := time.Now()
+	for i := 1; true; i++ {
 
 		mnemonic, _ := hdwallet.NewMnemonic(12, "")
 		master, err := hdwallet.NewKey(
@@ -59,24 +62,28 @@ func task() {
 			}
 		}
 
-		ethKeys := []string{"00000000", "00000001", "00000003", "00000006", "00000007", "00000008", "00000009", "00001314", "00002020"}
-		ethAddrCut := ethAddr[2:6] + ethAddr[38:]
 		ethCheck := false
-		for _, value := range ethKeys {
-			ethCheck = strings.HasSuffix(ethAddrCut, value)
-			if ethCheck {
-				break
+		if !btcCheck {
+			ethKeys := []string{"00000000", "00000001", "00000003", "00000006", "00000007", "00000008", "00000009", "00001314", "00002020"}
+			ethAddrCut := ethAddr[2:6] + ethAddr[38:]
+
+			for _, value := range ethKeys {
+				ethCheck = strings.HasSuffix(ethAddrCut, value)
+				if ethCheck {
+					break
+				}
 			}
 		}
 
 		if btcCheck || ethCheck {
+			total++
+			endTime := time.Since(startTime)
 
-			log.Println("")
+			log.Printf(" Cpu-%d  idx:%d  total:%d  rate:%d  runtime:%.6v  rate/t:%.6v", cpuNum, i, total, i/total, endTime.Abs(), endTime/time.Duration(total).Abs())
 			fmt.Println(mnemonic)
 
 			fmt.Println("BTC PrivateKey ：", btcWif)
 			fmt.Println("BTC Address : ", btcAddr)
-
 			fmt.Println("ETH PrivateKey ：", ethPriv)
 			fmt.Printf("ETH Address : %s\n\n", ethAddr)
 
