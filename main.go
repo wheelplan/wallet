@@ -54,7 +54,7 @@ func task(cpuNum int) {
 		ethAddr, _ := wallet.GetAddress()
 		ethPriv := wallet.GetKey().PrivateHex()
 
-		btcKeys := []string{"MyCoin", "MyLove", "MyDream", "MyBTC", "China", "Bitcoin", "LiuCan", "Lucky", "me"}
+		btcKeys := []string{"MyCoin", "MyLove", "MyDream", "MyBTC", "China", "Bitcoin", "LiuCan", "Lucky"}
 
 		btcCheck := false
 		for _, value := range btcKeys {
