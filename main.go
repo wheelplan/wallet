@@ -9,9 +9,11 @@ import (
 	"time"
 )
 
+var cstZone = time.FixedZone("GMT", 8*3600)
+
 func main() {
 
-	log.Printf("%v START 🦁🦏🦛🐘🐯️...\n\n", time.Now().Format("2006-01-02 15:04:05"))
+	log.Printf("%v START 🦁🦏🦛🐘🐯️...\n\n", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
 
 	numCPU := runtime.NumCPU()
 
@@ -88,7 +90,7 @@ func task(counterIDX, counterTotal *ChannelCounter) {
 			total := counterTotal.Read()
 
 			log.Printf("%v  CPU-%d  idx:%d  total:%d  rate:%d  runtime:%.6v  rate/t:%.6v",
-				time.Now().Format("2006-01-02 15:04:05"), idx, total, idx/total, endTime.Abs(),
+				time.Now().In(cstZone).Format("2006-01-02 15:04:05"), idx, total, idx/total, endTime.Abs(),
 				endTime/time.Duration(total).Abs())
 
 			log.Printf("%s\nBTC Address: %s\nBTC PrivateKey: %s\nETH Address: %s\nETH PrivateKey: %s\n\n",
