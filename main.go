@@ -16,21 +16,23 @@ func main() {
 	numCPU := runtime.NumCPU()
 
 	done := make(chan int, 1)
+	counterIDX := NewChannelCounter()
+	counterTotal := NewChannelCounter()
 
 	for i := 0; i < numCPU; i++ {
-		go task(i)
+		go task(&counterIDX, &counterTotal)
 	}
 
 	<-done
 
 }
 
-func task(cpuNum int) {
+func task(counterIDX, counterTotal *ChannelCounter) {
 
-	total := 0
 	startTime := time.Now()
 
-	for i := 1; true; i++ {
+	for {
+		counterIDX.Add(1)
 
 		mnemonic, _ := hdwallet.NewMnemonic(12, "")
 		master, err := hdwallet.NewKey(
@@ -79,11 +81,14 @@ func task(cpuNum int) {
 		}
 
 		if btcCheck || ethCheck {
-			total++
+			counterTotal.Add(1)
 			endTime := time.Since(startTime)
 
-			log.Printf("%v  Cpu-%d  idx:%d  total:%d  rate:%d  runtime:%.6v  rate/t:%.6v",
-				time.Now().Format("2006-01-02 15:04:05"), cpuNum, i, total, i/total, endTime.Abs(),
+			idx := counterIDX.Read()
+			total := counterTotal.Read()
+
+			log.Printf("%v  CPU-%d  idx:%d  total:%d  rate:%d  runtime:%.6v  rate/t:%.6v",
+				time.Now().Format("2006-01-02 15:04:05"), idx, total, idx/total, endTime.Abs(),
 				endTime/time.Duration(total).Abs())
 
 			log.Printf("%s\nBTC Address: %s\nBTC PrivateKey: %s\nETH Address: %s\nETH PrivateKey: %s\n\n",
@@ -104,4 +109,35 @@ func init() {
 
 	log.SetOutput(logFile)
 
+}
+
+// ChannelCounter ++
+type ChannelCounter struct {
+	ch     chan func()
+	number uint64
+}
+
+func NewChannelCounter() ChannelCounter {
+	counter := &ChannelCounter{make(chan func(), 100), 0}
+	go func(counter *ChannelCounter) {
+		for f := range counter.ch {
+			f()
+		}
+	}(counter)
+	return *counter
+}
+
+func (c *ChannelCounter) Add(num uint64) {
+	c.ch <- func() {
+		c.number = c.number + num
+	}
+}
+
+func (c *ChannelCounter) Read() uint64 {
+	ret := make(chan uint64)
+	c.ch <- func() {
+		ret <- c.number
+		close(ret)
+	}
+	return <-ret
 }
