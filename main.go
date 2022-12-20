@@ -22,14 +22,14 @@ func main() {
 	counterTotal := NewChannelCounter()
 
 	for i := 0; i < numCPU; i++ {
-		go task(&counterIDX, &counterTotal)
+		go task(numCPU, &counterIDX, &counterTotal)
 	}
 
 	<-done
 
 }
 
-func task(counterIDX, counterTotal *ChannelCounter) {
+func task(numCPU int, counterIDX, counterTotal *ChannelCounter) {
 
 	startTime := time.Now()
 
@@ -58,7 +58,7 @@ func task(counterIDX, counterTotal *ChannelCounter) {
 		ethAddr, _ := wallet.GetAddress()
 		ethPriv := wallet.GetKey().PrivateHex()
 
-		btcKeys := []string{"MyCoin", "MyLove", "MyDream", "MyBTC", "China", "Bitcoin", "LiuCan", "Lucky"}
+		btcKeys := []string{"MyCoin", "MyLove", "MyDream", "MyBTC", "China", "Bitcoin", "LiuCan", "Lucky", "me"}
 
 		btcCheck := false
 		for _, value := range btcKeys {
@@ -89,8 +89,8 @@ func task(counterIDX, counterTotal *ChannelCounter) {
 			idx := counterIDX.Read()
 			total := counterTotal.Read()
 
-			log.Printf("%v  CPU-%d  idx:%d  total:%d  rate:%d  runtime:%.6v  rate/t:%.6v",
-				time.Now().In(cstZone).Format("2006-01-02 15:04:05"), idx, total, idx/total, endTime.Abs(),
+			log.Printf("%v  CPU-%d  idx:%d  total:%d  rate:%d  runtime:%.6v  rate/t:%v",
+				time.Now().In(cstZone).Format("2006-01-02 15:04:05"), numCPU, idx, total, idx/total, endTime.Abs(),
 				endTime/time.Duration(total).Abs())
 
 			log.Printf("%s\nBTC Address: %s\nBTC PrivateKey: %s\nETH Address: %s\nETH PrivateKey: %s\n\n",
