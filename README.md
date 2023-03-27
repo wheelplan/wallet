@@ -6,6 +6,6 @@ Generate a personalized crypto wallet.
 ```bash
 git clone https://github.com/wheelplan/wallet.git
 cd wallet/
-docker build -t go-alpine-wallet .
-docker run -d --cpus 1.7 --network none --restart always --name hdwallet go-alpine-wallet
+docker build -t wallet-robot .
+docker run -d --cpus 1.7 --network none --restart always --name hdwallet wallet-robot
 ```
